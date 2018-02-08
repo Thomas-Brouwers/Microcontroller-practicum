@@ -52,10 +52,10 @@ Version :    	DMK, Initial code
 	
 	while (1)
 	{
-		PORTD = 0xAA;			// Write 10101010b PORTD
-		wait( 250 );				
-		PORTD = 0x55;			// Write 01010101b PORTD
-		wait( 250 );				
+		PORTD = 0x80;			// Write 10000000b PORTD
+		wait( 500 );				
+		PORTD = 0x40;			// Write 01000000b PORTD
+		wait( 500 );				
 	}
 
 	return 1;
