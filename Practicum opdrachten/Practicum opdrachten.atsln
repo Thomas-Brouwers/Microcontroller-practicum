@@ -7,6 +7,8 @@ Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "KnipperDing", "KnipperDing\
 EndProject
 Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "opdracht 2", "opdracht 2\opdracht 2.cproj", "{EC51AD86-5F78-422E-A118-4AF4C69C20CA}"
 EndProject
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "opdracht 3", "opdracht 3\opdracht 3.cproj", "{61257939-9613-4555-9C7B-48EFAA750512}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AVR = Debug|AVR
@@ -21,6 +23,10 @@ Global
 		{EC51AD86-5F78-422E-A118-4AF4C69C20CA}.Debug|AVR.Build.0 = Debug|AVR
 		{EC51AD86-5F78-422E-A118-4AF4C69C20CA}.Release|AVR.ActiveCfg = Release|AVR
 		{EC51AD86-5F78-422E-A118-4AF4C69C20CA}.Release|AVR.Build.0 = Release|AVR
+		{61257939-9613-4555-9C7B-48EFAA750512}.Debug|AVR.ActiveCfg = Debug|AVR
+		{61257939-9613-4555-9C7B-48EFAA750512}.Debug|AVR.Build.0 = Debug|AVR
+		{61257939-9613-4555-9C7B-48EFAA750512}.Release|AVR.ActiveCfg = Release|AVR
+		{61257939-9613-4555-9C7B-48EFAA750512}.Release|AVR.Build.0 = Release|AVR
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
