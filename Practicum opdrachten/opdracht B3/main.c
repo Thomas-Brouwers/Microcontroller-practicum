@@ -1,45 +1,12 @@
-/* ---------------------------------------------------------------------------
-** This software is in the public domain, furnished "as is", without technical
-** support, and with no warranty, express or implied, as to its usefulness for
-** any purpose.
-**
-** lookup.c
-**
-** Beschrijving:	Ledpatroon op PORTD dmv table lookup (scheiding logica en data)    
-** Target:			AVR mcu
-** Build:			avr-gcc -std=c99 -Wall -O3 -mmcu=atmega128 -D F_CPU=8000000UL -c switch.c
-**					avr-gcc -g -mmcu=atmega128 -o lookup.elf lookup.o
-**					avr-objcopy -O ihex lookup.elf lookup.hex 
-**					or type 'make'
-** Author: 			dkroeske@gmail.com
-** -------------------------------------------------------------------------*/
+
 #define F_CPU 8000000
 #include <avr/io.h>
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
-typedef struct { 
-	unsigned char data;
-	unsigned int delay ;
-} PATTERN_STRUCT; 
 int idx = 0;
 
 
-// 7 seg
-// PORTD dp G F E D C B A
-//        y y y y x x x x
-
-PATTERN_STRUCT pattern[] = { 
-	{0x80, 150}, {0x00, 150}, 
-	{0x80, 150}, {0x00, 150},
-	{0x01, 150}, {0x02, 150}, {0x40, 150}, {0x20, 150},
-	{0x01, 150}, {0x02, 150}, {0x40, 150}, {0x20, 150},
-	{0x00, 150},
-	{0x01, 150}, {0x03, 150}, {0x43, 150}, {0x63, 150},	
-	{0x01, 150}, {0x03, 150}, {0x43, 150}, {0x63, 150},
-	{0x00, 150},
-	{0xFF, 0}
-};
 
 /******************************************************************/
 void wait( int ms )
