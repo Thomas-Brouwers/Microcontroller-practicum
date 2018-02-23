@@ -3,29 +3,29 @@ opdracht 3B1.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000006  00800100  00000164  000001d8  2**0
+  0 .data         00000006  00800100  000001a8  0000021c  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         00000164  00000000  00000000  00000074  2**1
+  1 .text         000001a8  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .comment      00000030  00000000  00000000  000001de  2**0
+  2 .comment      00000030  00000000  00000000  00000222  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000210  2**2
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000254  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000048  00000000  00000000  0000024c  2**0
+  4 .debug_aranges 00000068  00000000  00000000  00000290  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00000a4b  00000000  00000000  00000294  2**0
+  5 .debug_info   00000c70  00000000  00000000  000002f8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 0000087d  00000000  00000000  00000cdf  2**0
+  6 .debug_abbrev 00000997  00000000  00000000  00000f68  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   000003e1  00000000  00000000  0000155c  2**0
+  7 .debug_line   000004fc  00000000  00000000  000018ff  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  00000098  00000000  00000000  00001940  2**2
+  8 .debug_frame  000000b4  00000000  00000000  00001dfc  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    000004b8  00000000  00000000  000019d8  2**0
+  9 .debug_str    000004c2  00000000  00000000  00001eb0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    000001cb  00000000  00000000  00001e90  2**0
+ 10 .debug_loc    0000025e  00000000  00000000  00002372  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000038  00000000  00000000  0000205b  2**0
+ 11 .debug_ranges 00000048  00000000  00000000  000025d0  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -114,7 +114,7 @@ Disassembly of section .text:
   98:	11 e0       	ldi	r17, 0x01	; 1
   9a:	a0 e0       	ldi	r26, 0x00	; 0
   9c:	b1 e0       	ldi	r27, 0x01	; 1
-  9e:	e4 e6       	ldi	r30, 0x64	; 100
+  9e:	e8 ea       	ldi	r30, 0xA8	; 168
   a0:	f1 e0       	ldi	r31, 0x01	; 1
   a2:	00 e0       	ldi	r16, 0x00	; 0
   a4:	0b bf       	out	0x3b, r16	; 59
@@ -124,26 +124,34 @@ Disassembly of section .text:
   ac:	a6 30       	cpi	r26, 0x06	; 6
   ae:	b1 07       	cpc	r27, r17
   b0:	d9 f7       	brne	.-10     	; 0xa8 <__do_copy_data+0x10>
-  b2:	43 d0       	rcall	.+134    	; 0x13a <main>
-  b4:	55 c0       	rjmp	.+170    	; 0x160 <_exit>
+  b2:	62 d0       	rcall	.+196    	; 0x178 <main>
+  b4:	77 c0       	rjmp	.+238    	; 0x1a4 <_exit>
 
 000000b6 <__bad_interrupt>:
   b6:	a4 cf       	rjmp	.-184    	; 0x0 <__vectors>
 
 000000b8 <lcd_strobe_lcd_e>:
-
-	// Second nibble
-	PORTC = (byte<<4);
-	PORTC &= ~(1<<LCD_RS);
-	lcd_strobe_lcd_e();
-}
+outputs:
+notes:			According datasheet HD44780
+Version :    	DMK, Initial code
+*******************************************************************/
+{
+	PORTC |= (1<<LCD_E);	// E high
   b8:	ab 9a       	sbi	0x15, 3	; 21
+	#else
+		//round up by default
+		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
+	#endif
+
+	__builtin_avr_delay_cycles(__ticks_dc);
   ba:	8f ec       	ldi	r24, 0xCF	; 207
   bc:	97 e0       	ldi	r25, 0x07	; 7
   be:	01 97       	sbiw	r24, 0x01	; 1
   c0:	f1 f7       	brne	.-4      	; 0xbe <lcd_strobe_lcd_e+0x6>
   c2:	00 c0       	rjmp	.+0      	; 0xc4 <lcd_strobe_lcd_e+0xc>
   c4:	00 00       	nop
+	_delay_ms(1);			// nodig
+	PORTC &= ~(1<<LCD_E);  	// E low
   c6:	ab 98       	cbi	0x15, 3	; 21
   c8:	8f ec       	ldi	r24, 0xCF	; 207
   ca:	97 e0       	ldi	r25, 0x07	; 7
@@ -153,108 +161,232 @@ Disassembly of section .text:
   d2:	00 00       	nop
   d4:	08 95       	ret
 
-000000d6 <init_4bits_mode>:
+000000d6 <init>:
+inputs:
+outputs:
+notes:			According datasheet HD44780 table 12
+Version :    	DMK, Initial code
+*******************************************************************/
+{
   d6:	cf 93       	push	r28
+	// PORTC output mode and all low (also E and RS pin)
+	DDRC = 0xFF;
   d8:	8f ef       	ldi	r24, 0xFF	; 255
   da:	84 bb       	out	0x14, r24	; 20
+	PORTC = 0x00;
   dc:	15 ba       	out	0x15, r1	; 21
+
+	// Step 2 (table 12)
+	PORTC = 0x20;	// function set
   de:	c0 e2       	ldi	r28, 0x20	; 32
   e0:	c5 bb       	out	0x15, r28	; 21
+	lcd_strobe_lcd_e();
   e2:	ea df       	rcall	.-44     	; 0xb8 <lcd_strobe_lcd_e>
+
+	// Step 3 (table 12)
+	PORTC = 0x20;   // function set
+	lcd_strobe_lcd_e();
   e4:	c5 bb       	out	0x15, r28	; 21
   e6:	e8 df       	rcall	.-48     	; 0xb8 <lcd_strobe_lcd_e>
+	PORTC = 0x80;
   e8:	80 e8       	ldi	r24, 0x80	; 128
+	lcd_strobe_lcd_e();
   ea:	85 bb       	out	0x15, r24	; 21
+
+	// Step 4 (table 12)
+	PORTC = 0x00;   // Display on/off control
   ec:	e5 df       	rcall	.-54     	; 0xb8 <lcd_strobe_lcd_e>
+	lcd_strobe_lcd_e();
   ee:	15 ba       	out	0x15, r1	; 21
+	PORTC = 0xF0;
   f0:	e3 df       	rcall	.-58     	; 0xb8 <lcd_strobe_lcd_e>
+	lcd_strobe_lcd_e();
   f2:	80 ef       	ldi	r24, 0xF0	; 240
+
+	// Step 4 (table 12)
+	PORTC = 0x00;   // Entry mode set
   f4:	85 bb       	out	0x15, r24	; 21
+	lcd_strobe_lcd_e();
   f6:	e0 df       	rcall	.-64     	; 0xb8 <lcd_strobe_lcd_e>
   f8:	15 ba       	out	0x15, r1	; 21
+	PORTC = 0x60;
   fa:	de df       	rcall	.-68     	; 0xb8 <lcd_strobe_lcd_e>
   fc:	80 e6       	ldi	r24, 0x60	; 96
+	lcd_strobe_lcd_e();
   fe:	85 bb       	out	0x15, r24	; 21
  100:	db df       	rcall	.-74     	; 0xb8 <lcd_strobe_lcd_e>
+
+}
  102:	cf 91       	pop	r28
  104:	08 95       	ret
 
 00000106 <lcd_write_data>:
- 106:	cf 93       	push	r28
- 108:	c8 2f       	mov	r28, r24
- 10a:	85 bb       	out	0x15, r24	; 21
- 10c:	aa 9a       	sbi	0x15, 2	; 21
- 10e:	d4 df       	rcall	.-88     	; 0xb8 <lcd_strobe_lcd_e>
- 110:	c2 95       	swap	r28
- 112:	c0 7f       	andi	r28, 0xF0	; 240
- 114:	c5 bb       	out	0x15, r28	; 21
- 116:	aa 9a       	sbi	0x15, 2	; 21
- 118:	cf df       	rcall	.-98     	; 0xb8 <lcd_strobe_lcd_e>
- 11a:	cf 91       	pop	r28
- 11c:	08 95       	ret
-
-0000011e <lcd_write_string>:
- 11e:	cf 93       	push	r28
- 120:	df 93       	push	r29
- 122:	ec 01       	movw	r28, r24
- 124:	88 81       	ld	r24, Y
- 126:	88 23       	and	r24, r24
- 128:	29 f0       	breq	.+10     	; 0x134 <lcd_write_string+0x16>
- 12a:	21 96       	adiw	r28, 0x01	; 1
- 12c:	ec df       	rcall	.-40     	; 0x106 <lcd_write_data>
- 12e:	89 91       	ld	r24, Y+
- 130:	81 11       	cpse	r24, r1
- 132:	fc cf       	rjmp	.-8      	; 0x12c <lcd_write_string+0xe>
- 134:	df 91       	pop	r29
- 136:	cf 91       	pop	r28
- 138:	08 95       	ret
-
-0000013a <main>:
-notes:			Slow background task after init ISR
+inputs:			byte - written to LCD
+outputs:
+notes:			According datasheet HD44780 table 12
 Version :    	DMK, Initial code
 *******************************************************************/
 {
+ 106:	cf 93       	push	r28
+ 108:	c8 2f       	mov	r28, r24
+	// First nibble.
+	PORTC = byte;
+ 10a:	85 bb       	out	0x15, r24	; 21
+	PORTC |= (1<<LCD_RS);
+ 10c:	aa 9a       	sbi	0x15, 2	; 21
+	lcd_strobe_lcd_e();
+ 10e:	d4 df       	rcall	.-88     	; 0xb8 <lcd_strobe_lcd_e>
+
+	// Second nibble
+	PORTC = (byte<<4);
+ 110:	c2 95       	swap	r28
+ 112:	c0 7f       	andi	r28, 0xF0	; 240
+ 114:	c5 bb       	out	0x15, r28	; 21
+	PORTC |= (1<<LCD_RS);
+	lcd_strobe_lcd_e();
+ 116:	aa 9a       	sbi	0x15, 2	; 21
+ 118:	cf df       	rcall	.-98     	; 0xb8 <lcd_strobe_lcd_e>
+}
+ 11a:	cf 91       	pop	r28
+ 11c:	08 95       	ret
+
+0000011e <display_text>:
+inputs:
+outputs:
+notes:			According datasheet HD44780 table 12
+Version :    	DMK, Initial code
+*******************************************************************/
+{
+ 11e:	cf 93       	push	r28
+ 120:	df 93       	push	r29
+ 122:	ec 01       	movw	r28, r24
+	// while(*str) {
+	// 	lcd_write_data(*str++);
+	// }
+
+	// of met een for:
+	for(;*str; str++){
+ 124:	88 81       	ld	r24, Y
+ 126:	88 23       	and	r24, r24
+ 128:	31 f0       	breq	.+12     	; 0x136 <display_text+0x18>
+ 12a:	21 96       	adiw	r28, 0x01	; 1
+		lcd_write_data(*str);
+ 12c:	90 e0       	ldi	r25, 0x00	; 0
+ 12e:	eb df       	rcall	.-42     	; 0x106 <lcd_write_data>
+	// while(*str) {
+	// 	lcd_write_data(*str++);
+	// }
+
+	// of met een for:
+	for(;*str; str++){
+ 130:	89 91       	ld	r24, Y+
+ 132:	81 11       	cpse	r24, r1
+ 134:	fb cf       	rjmp	.-10     	; 0x12c <display_text+0xe>
+		lcd_write_data(*str);
+	}
+}
+ 136:	df 91       	pop	r29
+ 138:	cf 91       	pop	r28
+ 13a:	08 95       	ret
+
+0000013c <lcd_command>:
+	_delay_ms(1);			// nodig?
+}
+
+void lcd_command ( unsigned char dat )
+{
+	PORTC = dat & 0xF0; // hoge nibble
+ 13c:	98 2f       	mov	r25, r24
+ 13e:	90 7f       	andi	r25, 0xF0	; 240
+ 140:	95 bb       	out	0x15, r25	; 21
+	PORTC = PORTC | 0x08; // data (RS=0),
+ 142:	ab 9a       	sbi	0x15, 3	; 21
+ 144:	ef ec       	ldi	r30, 0xCF	; 207
+ 146:	f7 e0       	ldi	r31, 0x07	; 7
+ 148:	31 97       	sbiw	r30, 0x01	; 1
+ 14a:	f1 f7       	brne	.-4      	; 0x148 <lcd_command+0xc>
+ 14c:	00 c0       	rjmp	.+0      	; 0x14e <lcd_command+0x12>
+ 14e:	00 00       	nop
+	// start (EN=1)
+	_delay_ms(1); // wait 1 ms
+	PORTC = 0x04; // stop (EN = 0)
+ 150:	94 e0       	ldi	r25, 0x04	; 4
+ 152:	95 bb       	out	0x15, r25	; 21
+	PORTC = (dat & 0x0F) << 4; // lage nibble
+ 154:	f0 e1       	ldi	r31, 0x10	; 16
+ 156:	8f 9f       	mul	r24, r31
+ 158:	c0 01       	movw	r24, r0
+ 15a:	11 24       	eor	r1, r1
+ 15c:	85 bb       	out	0x15, r24	; 21
+	PORTC = PORTC | 0x08; // data (RS=0),
+ 15e:	ab 9a       	sbi	0x15, 3	; 21
+ 160:	8f ec       	ldi	r24, 0xCF	; 207
+ 162:	97 e0       	ldi	r25, 0x07	; 7
+ 164:	01 97       	sbiw	r24, 0x01	; 1
+ 166:	f1 f7       	brne	.-4      	; 0x164 <lcd_command+0x28>
+ 168:	00 c0       	rjmp	.+0      	; 0x16a <lcd_command+0x2e>
+ 16a:	00 00       	nop
+	// start (EN=1)
+	_delay_ms(1); // wait 1 ms
+	PORTC = 0x00; // stop
+ 16c:	15 ba       	out	0x15, r1	; 21
+ 16e:	08 95       	ret
+
+00000170 <set_cursor>:
+}
+
+void set_cursor(int position)
+{
+	//for (int i = 0; i<position;i++){
+	lcd_command(0x80 + position);
+ 170:	80 58       	subi	r24, 0x80	; 128
+ 172:	9f 4f       	sbci	r25, 0xFF	; 255
+ 174:	e3 cf       	rjmp	.-58     	; 0x13c <lcd_command>
+ 176:	08 95       	ret
+
+00000178 <main>:
+
+
+int main( void )
+{
 	// Init I/O
-	DDRD = 0xFF;			// PORTD(7) output, PORTD(6:0) input
- 13a:	8f ef       	ldi	r24, 0xFF	; 255
- 13c:	81 bb       	out	0x11, r24	; 17
+	DDRD = 0xFF;
+ 178:	8f ef       	ldi	r24, 0xFF	; 255
+ 17a:	81 bb       	out	0x11, r24	; 17
 
-	// Init LCD
-	init_4bits_mode();
- 13e:	cb df       	rcall	.-106    	; 0xd6 <init_4bits_mode>
+	init();
+ 17c:	ac df       	rcall	.-168    	; 0xd6 <init>
+	
 
-	// Write sample string
-	lcd_write_string("Test");
- 140:	80 e0       	ldi	r24, 0x00	; 0
- 142:	91 e0       	ldi	r25, 0x01	; 1
- 144:	ec df       	rcall	.-40     	; 0x11e <lcd_write_string>
-
-	// Loop forever
+	set_cursor(5);
+ 17e:	85 e0       	ldi	r24, 0x05	; 5
+ 180:	90 e0       	ldi	r25, 0x00	; 0
+ 182:	f6 df       	rcall	.-20     	; 0x170 <set_cursor>
+	display_text("Test");
+ 184:	80 e0       	ldi	r24, 0x00	; 0
+ 186:	91 e0       	ldi	r25, 0x01	; 1
+ 188:	ca df       	rcall	.-108    	; 0x11e <display_text>
+		
+	
 	while (1)
 	{
 		PORTD ^= (1<<7);	// Toggle PORTD.7
- 146:	82 b3       	in	r24, 0x12	; 18
- 148:	80 58       	subi	r24, 0x80	; 128
- 14a:	82 bb       	out	0x12, r24	; 18
-	#else
-		//round up by default
-		__ticks_dc = (uint32_t)(ceil(fabs(__tmp)));
-	#endif
+ 18a:	82 b3       	in	r24, 0x12	; 18
+ 18c:	80 58       	subi	r24, 0x80	; 128
+ 18e:	82 bb       	out	0x12, r24	; 18
+ 190:	2f e7       	ldi	r18, 0x7F	; 127
+ 192:	8a e1       	ldi	r24, 0x1A	; 26
+ 194:	96 e0       	ldi	r25, 0x06	; 6
+ 196:	21 50       	subi	r18, 0x01	; 1
+ 198:	80 40       	sbci	r24, 0x00	; 0
+ 19a:	90 40       	sbci	r25, 0x00	; 0
+ 19c:	e1 f7       	brne	.-8      	; 0x196 <main+0x1e>
+ 19e:	00 c0       	rjmp	.+0      	; 0x1a0 <main+0x28>
+ 1a0:	00 00       	nop
+ 1a2:	f3 cf       	rjmp	.-26     	; 0x18a <main+0x12>
 
-	__builtin_avr_delay_cycles(__ticks_dc);
- 14c:	2f e7       	ldi	r18, 0x7F	; 127
- 14e:	8a e1       	ldi	r24, 0x1A	; 26
- 150:	96 e0       	ldi	r25, 0x06	; 6
- 152:	21 50       	subi	r18, 0x01	; 1
- 154:	80 40       	sbci	r24, 0x00	; 0
- 156:	90 40       	sbci	r25, 0x00	; 0
- 158:	e1 f7       	brne	.-8      	; 0x152 <main+0x18>
- 15a:	00 c0       	rjmp	.+0      	; 0x15c <main+0x22>
- 15c:	00 00       	nop
- 15e:	f3 cf       	rjmp	.-26     	; 0x146 <main+0xc>
+000001a4 <_exit>:
+ 1a4:	f8 94       	cli
 
-00000160 <_exit>:
- 160:	f8 94       	cli
-
-00000162 <__stop_program>:
- 162:	ff cf       	rjmp	.-2      	; 0x162 <__stop_program>
+000001a6 <__stop_program>:
+ 1a6:	ff cf       	rjmp	.-2      	; 0x1a6 <__stop_program>
