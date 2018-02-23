@@ -11,7 +11,7 @@ int main( void )
 	init();
 	
 
-	set_cursor(5);
+	set_cursor(3);
 	display_text("Test");
 		
 	
