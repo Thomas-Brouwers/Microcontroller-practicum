@@ -26,7 +26,7 @@ Version :    	DMK, Initial code
 	DDRC = 0xFF;
 	PORTC = 0x00;
 	
-	lcd_command(0x01);
+	lcd_command(0x01); //clear display
 
 	// Step 2 (table 12)
 	PORTC = 0x20;	// function set

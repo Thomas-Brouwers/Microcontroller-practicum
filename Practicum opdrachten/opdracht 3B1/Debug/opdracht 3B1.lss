@@ -3,29 +3,29 @@ opdracht 3B1.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .data         00000006  00800100  000001ae  00000222  2**0
+  0 .data         00000010  00800100  000001ba  0000022e  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  1 .text         000001ae  00000000  00000000  00000074  2**1
+  1 .text         000001ba  00000000  00000000  00000074  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  2 .comment      00000030  00000000  00000000  00000228  2**0
+  2 .comment      00000030  00000000  00000000  0000023e  2**0
                   CONTENTS, READONLY
-  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000258  2**2
+  3 .note.gnu.avr.deviceinfo 0000003c  00000000  00000000  00000270  2**2
                   CONTENTS, READONLY
-  4 .debug_aranges 00000068  00000000  00000000  00000294  2**0
+  4 .debug_aranges 00000068  00000000  00000000  000002ac  2**0
                   CONTENTS, READONLY, DEBUGGING
-  5 .debug_info   00000c9b  00000000  00000000  000002fc  2**0
+  5 .debug_info   00000cd0  00000000  00000000  00000314  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_abbrev 000009a4  00000000  00000000  00000f97  2**0
+  6 .debug_abbrev 000009a4  00000000  00000000  00000fe4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_line   00000501  00000000  00000000  0000193b  2**0
+  7 .debug_line   00000510  00000000  00000000  00001988  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_frame  000000b4  00000000  00000000  00001e3c  2**2
+  8 .debug_frame  000000b4  00000000  00000000  00001e98  2**2
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_str    000004c2  00000000  00000000  00001ef0  2**0
+  9 .debug_str    000004c2  00000000  00000000  00001f4c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_loc    0000025e  00000000  00000000  000023b2  2**0
+ 10 .debug_loc    0000025e  00000000  00000000  0000240e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000048  00000000  00000000  00002610  2**0
+ 11 .debug_ranges 00000048  00000000  00000000  0000266c  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -114,18 +114,18 @@ Disassembly of section .text:
   98:	11 e0       	ldi	r17, 0x01	; 1
   9a:	a0 e0       	ldi	r26, 0x00	; 0
   9c:	b1 e0       	ldi	r27, 0x01	; 1
-  9e:	ee ea       	ldi	r30, 0xAE	; 174
+  9e:	ea eb       	ldi	r30, 0xBA	; 186
   a0:	f1 e0       	ldi	r31, 0x01	; 1
   a2:	00 e0       	ldi	r16, 0x00	; 0
   a4:	0b bf       	out	0x3b, r16	; 59
   a6:	02 c0       	rjmp	.+4      	; 0xac <__do_copy_data+0x14>
   a8:	07 90       	elpm	r0, Z+
   aa:	0d 92       	st	X+, r0
-  ac:	a6 30       	cpi	r26, 0x06	; 6
+  ac:	a0 31       	cpi	r26, 0x10	; 16
   ae:	b1 07       	cpc	r27, r17
   b0:	d9 f7       	brne	.-10     	; 0xa8 <__do_copy_data+0x10>
   b2:	65 d0       	rcall	.+202    	; 0x17e <main>
-  b4:	7a c0       	rjmp	.+244    	; 0x1aa <_exit>
+  b4:	80 c0       	rjmp	.+256    	; 0x1b6 <_exit>
 
 000000b6 <__bad_interrupt>:
   b6:	a4 cf       	rjmp	.-184    	; 0x0 <__vectors>
@@ -274,21 +274,20 @@ void lcd_command ( unsigned char dat )
  13e:	08 95       	ret
 
 00000140 <init>:
-inputs:
-outputs:
-notes:			According datasheet HD44780 table 12
-Version :    	DMK, Initial code
-*******************************************************************/
+
+#define LCD_E 	3
+#define LCD_RS	2
+
+void init(void)
 {
  140:	cf 93       	push	r28
-	// PORTC output mode and all low (also E and RS pin)
 	DDRC = 0xFF;
  142:	8f ef       	ldi	r24, 0xFF	; 255
  144:	84 bb       	out	0x14, r24	; 20
 	PORTC = 0x00;
  146:	15 ba       	out	0x15, r1	; 21
 	
-	lcd_command(0x01);
+	lcd_command(0x01); //clear display
  148:	81 e0       	ldi	r24, 0x01	; 1
  14a:	90 e0       	ldi	r25, 0x00	; 0
  14c:	df df       	rcall	.-66     	; 0x10c <lcd_command>
@@ -362,36 +361,43 @@ int main( void )
 	init();
  182:	de df       	rcall	.-68     	; 0x140 <init>
 	
-
-	set_cursor(3);
- 184:	83 e0       	ldi	r24, 0x03	; 3
+	set_cursor(9);
+ 184:	89 e0       	ldi	r24, 0x09	; 9
  186:	90 e0       	ldi	r25, 0x00	; 0
  188:	f6 df       	rcall	.-20     	; 0x176 <set_cursor>
-	display_text("Test");
+	display_text("_");
  18a:	80 e0       	ldi	r24, 0x00	; 0
  18c:	91 e0       	ldi	r25, 0x01	; 1
  18e:	af df       	rcall	.-162    	; 0xee <display_text>
+	set_cursor(40);
+ 190:	88 e2       	ldi	r24, 0x28	; 40
+ 192:	90 e0       	ldi	r25, 0x00	; 0
+ 194:	f0 df       	rcall	.-32     	; 0x176 <set_cursor>
+	display_text("HALLO ETIENNE");
+ 196:	82 e0       	ldi	r24, 0x02	; 2
+ 198:	91 e0       	ldi	r25, 0x01	; 1
+ 19a:	a9 df       	rcall	.-174    	; 0xee <display_text>
+ 19c:	82 b3       	in	r24, 0x12	; 18
 		
 	
 	while (1)
 	{
 		PORTD ^= (1<<7);	// Toggle PORTD.7
- 190:	82 b3       	in	r24, 0x12	; 18
- 192:	80 58       	subi	r24, 0x80	; 128
- 194:	82 bb       	out	0x12, r24	; 18
- 196:	2f e7       	ldi	r18, 0x7F	; 127
- 198:	8a e1       	ldi	r24, 0x1A	; 26
- 19a:	96 e0       	ldi	r25, 0x06	; 6
- 19c:	21 50       	subi	r18, 0x01	; 1
- 19e:	80 40       	sbci	r24, 0x00	; 0
- 1a0:	90 40       	sbci	r25, 0x00	; 0
- 1a2:	e1 f7       	brne	.-8      	; 0x19c <main+0x1e>
- 1a4:	00 c0       	rjmp	.+0      	; 0x1a6 <main+0x28>
- 1a6:	00 00       	nop
- 1a8:	f3 cf       	rjmp	.-26     	; 0x190 <main+0x12>
+ 19e:	80 58       	subi	r24, 0x80	; 128
+ 1a0:	82 bb       	out	0x12, r24	; 18
+ 1a2:	2f e7       	ldi	r18, 0x7F	; 127
+ 1a4:	8a e1       	ldi	r24, 0x1A	; 26
+ 1a6:	96 e0       	ldi	r25, 0x06	; 6
+ 1a8:	21 50       	subi	r18, 0x01	; 1
+ 1aa:	80 40       	sbci	r24, 0x00	; 0
+ 1ac:	90 40       	sbci	r25, 0x00	; 0
+ 1ae:	e1 f7       	brne	.-8      	; 0x1a8 <main+0x2a>
+ 1b0:	00 c0       	rjmp	.+0      	; 0x1b2 <main+0x34>
+ 1b2:	00 00       	nop
+ 1b4:	f3 cf       	rjmp	.-26     	; 0x19c <main+0x1e>
 
-000001aa <_exit>:
- 1aa:	f8 94       	cli
+000001b6 <_exit>:
+ 1b6:	f8 94       	cli
 
-000001ac <__stop_program>:
- 1ac:	ff cf       	rjmp	.-2      	; 0x1ac <__stop_program>
+000001b8 <__stop_program>:
+ 1b8:	ff cf       	rjmp	.-2      	; 0x1b8 <__stop_program>

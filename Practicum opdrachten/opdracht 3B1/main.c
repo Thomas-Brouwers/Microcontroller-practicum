@@ -10,9 +10,10 @@ int main( void )
 
 	init();
 	
-
-	set_cursor(3);
-	display_text("Test");
+	set_cursor(9);
+	display_text("_");
+	set_cursor(40);
+	display_text("HALLO ETIENNE");
 		
 	
 	while (1)

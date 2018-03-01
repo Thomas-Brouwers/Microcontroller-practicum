@@ -17,8 +17,8 @@ ISR( TIMER2_OVF_vect )
 void timer2Init( void )
 {
 	OCR2 = CompareValue; // Compare value of counter 2
-	TIMSK |= 0x07; // T2 compare match interrupt enable
-	SREG |= 0x07; // turn_on intr all
+	TIMSK |= 0x08; // T2 compare match interrupt enable
+	SREG |= 0x08; // turn_on intr all
 	TCCR2 = 0b00011111; // Initialize T2: ext.counting, rising edge
 	// compare output mode, CTC, RUN
 }
@@ -29,7 +29,6 @@ int main( void )
 	char str[80];
 	init();
 	DDRD &= 0b00000010; // set PORTD.7 for input
-	TCCR2 = 0b00001011;
 	DDRA = 0xFF; // set PORTB for output (shows countregister)
 	DDRB = 0xFF; // set PORTC for output (shows tenth value)
 	timer2Init();
