@@ -37,16 +37,17 @@ void wait( int ms )
 void adcInit( void )
 {
 	ADMUX = 0b01100011;			// AREF=VCC, result left adjusted, channel1 at pin PF3
-	ADCSRA = 0b11100011;		// ADC-enable, no interrupt, start, free running, division by 64
+	ADCSRA = 0b11111011;		// ADC-enable, interrupt enabled, start, free running, division by 64
 }
 
 
-// Main program: ADC at PF3
+// Main program: ADC at PF1
 int main( void )
 {
 	DDRF = 0x00;				// set PORTF for input (ADC)
 	DDRA = 0xFF;				// set PORTA for output 
 	DDRB = 0xFF;				// set PORTB for output
+	sei();
 	adcInit();					// initialize ADC
 
 	while (1)
