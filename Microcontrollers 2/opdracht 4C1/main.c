@@ -74,7 +74,7 @@ spi_slaveSelect(0); // Select display chip (MAX7219)
  spi_slaveDeSelect(0); // Deselect display chip
  spi_slaveSelect(0); // Select display chip
  spi_write(0x0B); // Register 0B: Scan-limit
- spi_write(0x01); // -> 1 = Display digits 0..1
+ spi_write(0x03); // -> 1 = Display digits 0..1
  spi_slaveDeSelect(0); // Deselect display chip
  spi_slaveSelect(0); // Select display chip
  spi_write(0x0C); // Register 0B: Shutdown register
@@ -97,13 +97,35 @@ void displayOff()
  spi_write(0x00); // -> 1 = Normal operation
  spi_slaveDeSelect(0); // Deselect display chip
 }
+
+void spi_writeWord ( unsigned char adress, unsigned char data ){
+	spi_slaveSelect(0); // Select display chip
+	spi_write(adress); // Register 0A: Intensity
+	spi_write(data); // -> Level 4 (in range [1..F])
+	spi_slaveDeSelect(0); // Deselect display chip
+}
+
+void writeLedDisplay( int value ){
+	int idx = 1;
+	if(value < 0) {
+		spi_writeWord(4, 10);
+		value = value *-1;
+	}
+	while (value > 0) {
+		int digit = value % 10;
+	spi_writeWord(idx, digit);
+	value /= 10;
+	idx++;
+}
+}
+
 int main()
 {
 DDRB=0x01; // Set PB0 pin as output for display select
 spi_masterInit(); // Initialize spi module
 displayDriverInit(); // Initialize display chip
 // clear display (all zero's)
-for (char i =1; i<=2; i++)
+for (char i =1; i<=4; i++)
 {
  spi_slaveSelect(0); // Select display chip
  spi_write(i); // digit adress: (digit place)
@@ -111,15 +133,17 @@ for (char i =1; i<=2; i++)
  spi_slaveDeSelect(0); // Deselect display chip
 }
 wait(1000);
+
+writeLedDisplay(-648);
 // write 4-digit data
-for (char i =1; i<=2; i++)
+/*for (char i =1; i<=4; i++)
  {
 spi_slaveSelect(0); // Select display chip
 spi_write(i); // digit adress: (digit place)
 spi_write(i); // digit value: i (= digit place)
 spi_slaveDeSelect(0); // Deselect display chip
 wait(1000);
- }
+ }*/
 wait(1000);
  return (1);
 }
